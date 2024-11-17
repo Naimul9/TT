@@ -1,12 +1,12 @@
-import { useContext, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import useAxiosPublic from "../../Hooks/useAxiosPublic";
 import { Helmet } from "react-helmet";
-import { AuthContext } from "../../Provider/AuthProvider";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+
+import { Link } from "react-router-dom";
+
 
 const Products = () => {
-    const { user } = useContext(AuthContext); // Removed loading from AuthContext
+ // Removed loading from AuthContext
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
@@ -21,17 +21,11 @@ const Products = () => {
     const [loading, setLoading] = useState(false); // Local loading state
 
     const axiosPublic = useAxiosPublic();
-    const navigate = useNavigate(); 
-    const location = useLocation(); 
+  
 
-    const query = new URLSearchParams(location.search);
-    const categoryFromQuery = query.get('category');
 
-    useEffect(() => {
-        if (categoryFromQuery) {
-            setFilters((prevFilters) => ({ ...prevFilters, category: categoryFromQuery }));
-        }
-    }, [categoryFromQuery]);
+    
+
 
     const fetchProducts = async () => {
         setLoading(true); // Set loading to true when fetching starts
@@ -61,49 +55,6 @@ const Products = () => {
         fetchProducts();
     }, [currentPage, filters, sort]);
 
-    const handleAddToCart = async (product) => {
-        if (!user?.email) {
-            navigate('/login');
-            return;
-        }
-
-        const cartItem = {
-            ...product,
-            userEmail: user?.email
-        };
-
-        try {
-            const response = await axiosPublic.post('/cart', cartItem);
-            if (response.data.success) {
-                toast.success("Item added to cart");
-            }
-        } catch (error) {
-            console.error('Error adding item to cart:', error);
-            toast.error('Item already added');
-        }
-    };
-
-    const handleAddToWishlist = async (product) => {
-        if (!user?.email) {
-            navigate('/login');
-            return;
-        }
-
-        const wishlistItem = {
-            ...product,
-            userEmail: user?.email
-        };
-
-        try {
-            const response = await axiosPublic.post('/wishlist', wishlistItem);
-            if (response.data.success) {
-                toast.success("Item added to wishlist");
-            }
-        } catch (error) {
-            console.error('Error adding item to wishlist:', error);
-            toast.error('Item already added');
-        }
-    };
 
     return (
         <div className="container mx-auto my-10 px-4">
@@ -205,12 +156,7 @@ const Products = () => {
                                     <p>{product.category}</p>
                                     <p className="text-lg font-bold">${product.price}</p>
                                     <div className="card-actions flex justify-between">
-                                        <button 
-                                            onClick={() => handleAddToCart(product)} 
-                                            className="btn bg-slate-400 hover:bg-slate-500 text-white">
-                                            Add To Cart
-                                        </button>
-                                        <button onClick={() => handleAddToWishlist(product)} className="btn bg-slate-400 hover:bg-slate-500 text-white">Wishlist</button>
+                                    
                                         <Link to={`/product-detail/${product._id}`}>
                                             <button className="btn bg-slate-400 hover:bg-slate-500 text-white">Details</button>
                                         </Link>

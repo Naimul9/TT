@@ -12,17 +12,17 @@ const Featured = () => {
            <div className="card bg-base-100 shadow-xl">
                                 <figure className="px-10 pt-10">
                                     <img
-                                        src='https://admin.dazzle.com.bd/assets/accounts/a_8037/prod_972_821.jpg'
+                                        src='https://i.ibb.co.com/VHv3c8w/mg.jpg'
                                         alt=''
                                         loading="lazy"
                                         className="rounded-xl w-full"
                                     />
                                 </figure>
                                 <div className="card-body ">
-                                    <p className="text-sm font-medium">Apple</p>
-                                    <h2 className="card-title">Iphone 14 Pro</h2>
+                                    <p className="text-sm font-medium">Infinix</p>
+                                    <h2 className="card-title">Infinix GT20 Pro</h2>
                                     <p className="font-medium">Category: Smartphone</p>
-                                    <p className="text-lg font-bold">Price: 1400$</p>
+                                    <p className="text-lg font-bold">Price: 250$</p>
                                     
                                 </div>
                             </div>
@@ -30,7 +30,7 @@ const Featured = () => {
            <div className="card bg-base-100 shadow-xl">
                                 <figure className="px-10 pt-10">
                                     <img
-                                        src='https://admin.dazzle.com.bd/assets/accounts/a_8037/prod_46_212.jpg'
+                                        src='https://i.ibb.co.com/Gv4f0c4/Galaxy-S23-Cream-3448.jpg'
                                         alt=''
                                         loading="lazy"
                                         className="rounded-xl w-full"
@@ -48,17 +48,17 @@ const Featured = () => {
            <div className="card bg-base-100 shadow-xl">
                                 <figure className="px-10 pt-10">
                                     <img
-                                        src='https://admin.dazzle.com.bd/assets/accounts/a_8037/prod_809_099.jpg'
+                                        src='https://i.ibb.co.com/82DpKcS/ASUS-ROG-Zephyrus-G16-GU605-MY-Eclipse-Grey-a-9307.jpg'
                                         alt=''
                                         loading="lazy"
                                         className="rounded-xl w-full"
                                     />
                                 </figure>
                                 <div className="card-body ">
-                                    <p className="text-sm font-medium">MSI</p>
-                                    <h2 className="card-title">MSI Vector GP68HX</h2>
+                                    <p className="text-sm font-medium">Asus</p>
+                                    <h2 className="card-title">ASUS ROG Zephyrus G16</h2>
                                     <p className="font-medium">Category: Laptop</p>
-                                    <p className="text-lg font-bold">Price: 2599.99$</p>
+                                    <p className="text-lg font-bold">Price: 2299.99$</p>
                                     
                                 </div>
                             </div>
@@ -66,7 +66,7 @@ const Featured = () => {
            <div className="card bg-base-100 shadow-xl">
                                 <figure className="px-10 pt-10">
                                     <img
-                                        src='https://admin.dazzle.com.bd/assets/accounts/a_8037/prod_7_510.jpg'
+                                        src='https://i.ibb.co.com/0Q5yMHG/5384-47233.jpg'
                                         alt=''
                                         loading="lazy"
                                         className="rounded-xl w-full"
