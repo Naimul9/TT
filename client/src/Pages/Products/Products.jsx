@@ -1,16 +1,14 @@
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useAxiosPublic from "../../Hooks/useAxiosPublic";
 import { Helmet } from "react-helmet";
-
 import { Link } from "react-router-dom";
 
-
 const Products = () => {
- // Removed loading from AuthContext
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
     const [filters, setFilters] = useState({
         category: '',
         brand: '',
@@ -18,43 +16,48 @@ const Products = () => {
         maxPrice: ''
     });
     const [sort, setSort] = useState('');
-    const [loading, setLoading] = useState(false); // Local loading state
+    const [loading, setLoading] = useState(false);
 
     const axiosPublic = useAxiosPublic();
-  
 
+    // Debounce the search term to limit API calls
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearchTerm(searchTerm);
+        }, 500); // Adjust debounce delay as needed
 
-    
-
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [searchTerm]);
 
     const fetchProducts = async () => {
-        setLoading(true); // Set loading to true when fetching starts
+        setLoading(true);
         try {
             const queryParams = new URLSearchParams({
-                page: currentPage,
-                search: searchTerm,
-                category: filters.category,
-                brand: filters.brand,
-                minPrice: filters.minPrice,
-                maxPrice: filters.maxPrice,
-                sort: sort,
-                limit: 10 
-            }).toString();
+                page: currentPage.toString(),
+                limit: '10',
+                search: debouncedSearchTerm || '',
+                category: filters.category || '',
+                brand: filters.brand || '',
+                minPrice: filters.minPrice || '',
+                maxPrice: filters.maxPrice || '',
+                sort: sort || '',
+            });
 
-            const response = await axiosPublic.get(`/products?${queryParams}`);
-            setProducts(response.data.products);
-            setTotalPages(response.data.totalPages);
+            const response = await axiosPublic.get(`/products?${queryParams.toString()}`);
+            setProducts(response.data.products || []);
+            setTotalPages(response.data.totalPages || 1);
         } catch (error) {
             console.error('Error fetching products:', error);
         } finally {
-            setLoading(false); // Set loading to false once data is fetched
+            setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchProducts();
-    }, [currentPage, filters, sort]);
-
+    }, [currentPage, debouncedSearchTerm, filters, sort]);
 
     return (
         <div className="container mx-auto my-10 px-4">
@@ -62,28 +65,24 @@ const Products = () => {
                 <title>Products</title>
             </Helmet>
 
-            {/* Search Input with Button Inside */}
+            {/* Search Input */}
             <div className="flex flex-col lg:flex-row justify-between mb-7 space-y-4 lg:space-y-0">
                 <div className="flex w-full lg:max-w-xs">
-                    <input 
-                        type="text" 
-                        value={searchTerm} 
-                        onChange={(e) => setSearchTerm(e.target.value)} 
-                        placeholder="Search products..." 
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Search products..."
                         className="input input-bordered w-full"
                     />
-                    <button 
-                        onClick={() => { setCurrentPage(1); fetchProducts(); }} 
-                        className="btn bg-slate-600 text-white">
-                        Search
-                    </button>
                 </div>
 
                 {/* Sorting Dropdown */}
-                <select 
-                    value={sort} 
-                    onChange={(e) => { setSort(e.target.value); setCurrentPage(1); }} 
-                    className="select select-bordered select-sm w-full lg:w-32">
+                <select
+                    value={sort}
+                    onChange={(e) => { setSort(e.target.value); setCurrentPage(1); }}
+                    className="select select-bordered select-sm w-full lg:w-32"
+                >
                     <option value="">Sort By</option>
                     <option value="lowToHigh">Low to High</option>
                     <option value="highToLow">High to Low</option>
@@ -93,10 +92,11 @@ const Products = () => {
 
             {/* Filters */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-7">
-                <select 
-                    value={filters.category} 
-                    onChange={(e) => { setFilters({...filters, category: e.target.value}); setCurrentPage(1); }} 
-                    className="select select-bordered select-sm w-full">
+                <select
+                    value={filters.category}
+                    onChange={(e) => { setFilters({ ...filters, category: e.target.value }); setCurrentPage(1); }}
+                    className="select select-bordered select-sm w-full"
+                >
                     <option value="">All Categories</option>
                     <option value="Mobile">Mobile</option>
                     <option value="Tablet">Tablet</option>
@@ -105,31 +105,32 @@ const Products = () => {
                     <option value="Soundbox">Soundbox</option>
                 </select>
 
-                <select 
-                    value={filters.brand} 
-                    onChange={(e) => { setFilters({...filters, brand: e.target.value}); setCurrentPage(1); }} 
-                    className="select select-bordered select-sm w-full">
+                <select
+                    value={filters.brand}
+                    onChange={(e) => { setFilters({ ...filters, brand: e.target.value }); setCurrentPage(1); }}
+                    className="select select-bordered select-sm w-full"
+                >
                     <option value="">All Brands</option>
                     <option value="Apple">Apple</option>
                     <option value="Samsung">Samsung</option>
                     <option value="Sony">Sony</option>
                 </select>
 
-                <input 
-                    type="number" 
-                    value={filters.minPrice} 
-                    onChange={(e) => { setFilters({...filters, minPrice: e.target.value}); setCurrentPage(1); }} 
-                    placeholder="Min Price" 
+                <input
+                    type="number"
+                    value={filters.minPrice}
+                    onChange={(e) => { setFilters({ ...filters, minPrice: e.target.value }); setCurrentPage(1); }}
+                    placeholder="Min Price"
                     className="input input-bordered h-8 w-full"
                 />
-                <input 
-                    type="number" 
-                    value={filters.maxPrice} 
-                    onChange={(e) => { setFilters({...filters, maxPrice: e.target.value}); setCurrentPage(1); }} 
-                    placeholder="Max Price" 
+                <input
+                    type="number"
+                    value={filters.maxPrice}
+                    onChange={(e) => { setFilters({ ...filters, maxPrice: e.target.value }); setCurrentPage(1); }}
+                    placeholder="Max Price"
                     className="input input-bordered h-8 w-full"
                 />
-            </div>  
+            </div>
 
             {/* Loading Indicator */}
             {loading ? (
@@ -156,7 +157,6 @@ const Products = () => {
                                     <p>{product.category}</p>
                                     <p className="text-lg font-bold">${product.price}</p>
                                     <div className="card-actions flex justify-between">
-                                    
                                         <Link to={`/product-detail/${product._id}`}>
                                             <button className="btn bg-slate-400 hover:bg-slate-500 text-white">Details</button>
                                         </Link>
@@ -168,17 +168,19 @@ const Products = () => {
 
                     {/* Pagination Controls */}
                     <div className="flex justify-center mt-10">
-                        <button 
-                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                             disabled={currentPage === 1}
-                            className="btn bg-gray-500 text-white mr-2">
+                            className="btn bg-gray-500 text-white mr-2"
+                        >
                             Previous
                         </button>
                         <span className="mx-2 flex items-center">Page {currentPage} of {totalPages}</span>
-                        <button 
-                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                             disabled={currentPage === totalPages}
-                            className="btn bg-gray-500 text-white">
+                            className="btn bg-gray-500 text-white"
+                        >
                             Next
                         </button>
                     </div>

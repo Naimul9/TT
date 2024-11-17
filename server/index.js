@@ -4,13 +4,10 @@ const cors = require('cors');
 const port = process.env.PORT || 5000;
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const Stripe = require('stripe');
-
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Middleware 
 const corsOptions = {
-    origin: ['http://localhost:5173', 'http://localhost:5174', ],
+    origin: ['http://localhost:5173', 'http://localhost:5174',   ],
     credentials: true,
     optionSuccessStatus: 200,
 };
