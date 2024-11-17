@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useAxiosPublic from "../../Hooks/useAxiosPublic";
+import useDebounce from "../../Hooks/useDedounce";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 
@@ -8,7 +9,6 @@ const Products = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
-    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
     const [filters, setFilters] = useState({
         category: '',
         brand: '',
@@ -19,17 +19,7 @@ const Products = () => {
     const [loading, setLoading] = useState(false);
 
     const axiosPublic = useAxiosPublic();
-
-    // Debounce the search term to limit API calls
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            setDebouncedSearchTerm(searchTerm);
-        }, 500); // Adjust debounce delay as needed
-
-        return () => {
-            clearTimeout(handler);
-        };
-    }, [searchTerm]);
+    const debouncedSearchTerm = useDebounce(searchTerm, 500); // Debounce the search term
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -140,50 +130,58 @@ const Products = () => {
             ) : (
                 <>
                     {/* Products Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {products.map(product => (
-                            <div key={product.id} className="card bg-base-100 shadow-xl">
-                                <figure className="px-10 pt-10">
-                                    <img
-                                        src={product.image}
-                                        alt={product.name}
-                                        loading="lazy"
-                                        className="rounded-xl w-full"
-                                    />
-                                </figure>
-                                <div className="card-body">
-                                    <p className="text-sm">{product.brand}</p>
-                                    <h2 className="card-title">{product.name}</h2>
-                                    <p>{product.category}</p>
-                                    <p className="text-lg font-bold">${product.price}</p>
-                                    <div className="card-actions flex justify-between">
-                                        <Link to={`/product-detail/${product._id}`}>
-                                            <button className="btn bg-slate-400 hover:bg-slate-500 text-white">Details</button>
-                                        </Link>
+                    {products.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {products.map(product => (
+                                <div key={product.id} className="card bg-base-100 shadow-xl">
+                                    <figure className="px-10 pt-10">
+                                        <img
+                                            src={product.image}
+                                            alt={product.name}
+                                            loading="lazy"
+                                            className="rounded-xl w-full"
+                                        />
+                                    </figure>
+                                    <div className="card-body">
+                                        <p className="text-sm">{product.brand}</p>
+                                        <h2 className="card-title">{product.name}</h2>
+                                        <p>{product.category}</p>
+                                        <p className="text-lg font-bold">${product.price}</p>
+                                        <div className="card-actions flex justify-between">
+                                            <Link to={`/product-detail/${product._id}`}>
+                                                <button className="btn bg-slate-400 hover:bg-slate-500 text-white">Details</button>
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center my-10 text-lg font-semibold">
+                            No products available.
+                        </div>
+                    )}
 
                     {/* Pagination Controls */}
-                    <div className="flex justify-center mt-10">
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                            disabled={currentPage === 1}
-                            className="btn bg-gray-500 text-white mr-2"
-                        >
-                            Previous
-                        </button>
-                        <span className="mx-2 flex items-center">Page {currentPage} of {totalPages}</span>
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                            disabled={currentPage === totalPages}
-                            className="btn bg-gray-500 text-white"
-                        >
-                            Next
-                        </button>
-                    </div>
+                    {products.length > 0 && (
+                        <div className="flex justify-center mt-10">
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                                className="btn bg-gray-500 text-white mr-2"
+                            >
+                                Previous
+                            </button>
+                            <span className="mx-2 flex items-center">Page {currentPage} of {totalPages}</span>
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                                className="btn bg-gray-500 text-white"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
                 </>
             )}
         </div>
